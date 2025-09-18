@@ -7,13 +7,18 @@ import (
 )
 
 func main() {
-	startPath = os.Getwd()
-	model = ui.newModel(startPath)
-
-	program = tea.NewProgram(model)
-	error = program.Run()
-	if error != nil {
-		print(error)
+	startPath, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error getting working directory", err)
 		os.Exit(1)
 	}
+
+	model := ui.newModel(startPath)
+
+	program := tea.NewProgram(model)
+	if err := program.Start(); err != nil {
+		fmt.Println("Error starting program", err)
+		os.Exit(1)
+	}
+
 }
