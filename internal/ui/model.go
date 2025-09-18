@@ -1,6 +1,9 @@
 package ui
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/njaal0/CLIFileDirectory/internal/fs"
+)
 
 type Model struct {
 	currentPath string
@@ -9,14 +12,14 @@ type Model struct {
 	history     []string
 }
 
-func NewModel(startPath string) *Model {
-	entries, err := fs.ListEntries(startPath)
+func newModel(startPath string) *Model {
+	entries, err := fs.listEntries(startPath)
 	if err != nil {
 		fmt.Println("Error listing entries", err)
 		entries = []DirEntry{}
 	}
 
-	return model{
+	return &Model{
 		currentPath: startPath,
 		entries:     entries,
 		selectedIdx: 0,
