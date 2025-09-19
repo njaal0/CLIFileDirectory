@@ -13,7 +13,7 @@ type Model struct {
 }
 
 func newModel(startPath string) *Model {
-	entries, err := fs.listEntries(startPath)
+	entries, err := fs.ListEntries(startPath)
 	if err != nil {
 		fmt.Println("Error listing entries", err)
 		entries = []DirEntry{}
