@@ -19,6 +19,8 @@ func newModel(startPath string) *Model {
 		entries = []DirEntry{}
 	}
 
+	test := 1
+
 	return &Model{
 		currentPath: startPath,
 		entries:     entries,
