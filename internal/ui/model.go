@@ -3,23 +3,22 @@ package ui
 import (
 	"fmt"
 	"github.com/njaal0/CLIFileDirectory/internal/fs"
+	"os"
 )
 
 type Model struct {
 	currentPath string
-	entries     []DirEntry
+	entries     []os.DirEntry
 	selectedIdx int
 	history     []string
 }
 
-func newModel(startPath string) *Model {
+func NewModel(startPath string) *Model {
 	entries, err := fs.ListEntries(startPath)
 	if err != nil {
 		fmt.Println("Error listing entries", err)
-		entries = []DirEntry{}
+		entries = []os.DirEntry{}
 	}
-
-	test := 1
 
 	return &Model{
 		currentPath: startPath,

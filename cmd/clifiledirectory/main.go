@@ -1,8 +1,9 @@
-package clifiledirectory
+package main
 
 import (
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/njaal0/CLIFileDirectory/internal/ui"
 	"os"
 )
 
@@ -13,12 +14,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	model := ui.newModel(startPath)
+	var model *ui.Model = ui.NewModel(startPath)
 
-	program := tea.NewProgram(model)
-	if err := program.Start(); err != nil {
+	program = tea.NewProgram(model)
+	_, err = program.Run()
+	if err != nil {
 		fmt.Println("Error starting program", err)
 		os.Exit(1)
 	}
-
 }
