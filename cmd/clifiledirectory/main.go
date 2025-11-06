@@ -14,9 +14,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	var model *ui.Model = ui.NewModel(startPath)
+	model := ui.NewModel(startPath)
+	program := tea.NewProgram(model)
 
-	program = tea.NewProgram(model)
 	_, err = program.Run()
 	if err != nil {
 		fmt.Println("Error starting program", err)
