@@ -10,7 +10,7 @@ import (
 func main() {
 	startPath, err := os.Getwd()
 	if err != nil {
-		fmt.Println("Error getting working directory", err)
+		fmt.Println("Error getting directory", err)
 		os.Exit(1)
 	}
 
