@@ -17,9 +17,15 @@ func main() {
 	model := ui.NewModel(startPath)
 	program := tea.NewProgram(model)
 
-	_, err = program.Run()
+	finalModel, err := program.Run()
 	if err != nil {
 		fmt.Println("Error starting program", err)
 		os.Exit(1)
+	}
+
+	m := finalModel.(*ui.Model)
+
+	if m.ShouldPrintPath {
+		fmt.Println(m.CurrentPath)
 	}
 }

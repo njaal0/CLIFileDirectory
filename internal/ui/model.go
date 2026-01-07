@@ -8,12 +8,13 @@ import (
 )
 
 type Model struct {
-	currentPath    string
-	entries        []os.DirEntry
-	selectedIdx    int
-	history        []string
-	viewportHeight int
-	scrollOffset   int
+	CurrentPath     string
+	Entries         []os.DirEntry
+	SelectedIdx     int
+	History         []string
+	viewportHeight  int
+	ScrollOffset    int
+	ShouldPrintPath bool
 }
 
 func NewModel(startPath string) *Model {
@@ -24,10 +25,12 @@ func NewModel(startPath string) *Model {
 	}
 
 	return &Model{
-		currentPath: startPath,
-		entries:     entries,
-		selectedIdx: 0,
-		history:     []string{},
+		CurrentPath:     startPath,
+		Entries:         entries,
+		SelectedIdx:     0,
+		History:         []string{},
+		viewportHeight:  15,
+		ShouldPrintPath: true,
 	}
 }
 
