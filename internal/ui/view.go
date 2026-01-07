@@ -1,11 +1,8 @@
 package ui
 
-import (
-	"fmt"
-)
-
 func (m *Model) View() string {
-	output := fmt.Sprintf("📁 %s\n\n", m.currentPath)
+	output := headerStyle.Render("📁 " + m.currentPath)
+	output += "\n\n"
 
 	if len(m.entries) == 0 {
 		return output + "(empty directory)\n"
@@ -20,18 +17,27 @@ func (m *Model) View() string {
 	for i := start; i < end; i++ {
 		entry := m.entries[i]
 
-		cursor := "  "
-		if i == m.selectedIdx {
-			cursor = "➜ "
-		}
-
 		name := entry.Name()
+		style := fileStyle
+
 		if entry.IsDir() {
 			name += "/"
+			style = dirStyle
 		}
 
-		output += fmt.Sprintf("%s%s\n", cursor, name)
+		line := "  " + name
+
+		if i == m.selectedIdx {
+			line = selectedStyle.Render("➜ " + name)
+		} else {
+			line = style.Render(line)
+		}
+
+		output += line + "\n"
 	}
+
+	output += "\n"
+	output += footerStyle.Render("↑ ↓: navigate   ➜: open   ←: back   q: quit")
 
 	return output
 }
