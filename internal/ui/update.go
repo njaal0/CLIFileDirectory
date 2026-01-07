@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/njaal0/CLIFileDirectory/internal/fs"
 	"path/filepath"
@@ -30,6 +31,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 
 		case "ctrl+c", "q":
+			fmt.Println(m.currentPath)
 			return m, tea.Quit
 
 		case "up":
