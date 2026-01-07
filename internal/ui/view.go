@@ -7,10 +7,12 @@ import (
 func (m *Model) View() string {
 	var b strings.Builder
 
-	b.WriteString("📁 " + m.CurrentPath + "\n\n")
+	// Header
+	b.WriteString(headerStyle.Render("📁 " + m.CurrentPath))
+	b.WriteString("\n\n")
 
 	if len(m.Entries) == 0 {
-		b.WriteString("(empty)\n")
+		b.WriteString("(empty directory)\n")
 		return b.String()
 	}
 
@@ -21,13 +23,29 @@ func (m *Model) View() string {
 	}
 
 	for i := start; i < end; i++ {
-		prefix := "  "
-		if i == m.SelectedIdx {
-			prefix = "➜ "
+		entry := m.Entries[i]
+
+		name := entry.Name()
+		style := fileStyle
+
+		if entry.IsDir() {
+			name += "/"
+			style = dirStyle
 		}
-		b.WriteString(prefix + m.Entries[i].Name() + "\n")
+
+		var line string
+		if i == m.SelectedIdx {
+			line = selectedStyle.Render("➜ " + name)
+		} else {
+			line = style.Render("  " + name)
+		}
+
+		b.WriteString(line + "\n")
 	}
 
-	b.WriteString("↑ ↓: navigate   ➜: open   ←: back   q: quit   c: cancel cd after quit")
+	// Footer
+	b.WriteString("\n")
+	b.WriteString(footerStyle.Render("↑ ↓ navigate   Enter open   q quit"))
+
 	return b.String()
 }
