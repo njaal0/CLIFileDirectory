@@ -8,10 +8,12 @@ import (
 )
 
 type Model struct {
-	currentPath string
-	entries     []os.DirEntry
-	selectedIdx int
-	history     []string
+	currentPath    string
+	entries        []os.DirEntry
+	selectedIdx    int
+	history        []string
+	viewportHeight int
+	scrollOffset   int
 }
 
 func NewModel(startPath string) *Model {
@@ -31,29 +33,4 @@ func NewModel(startPath string) *Model {
 
 func (m *Model) Init() tea.Cmd {
 	return nil
-}
-
-func (m *Model) View() string {
-	if len(m.entries) == 0 {
-		return fmt.Sprintf("Current directory: %s\n\n(empty)\n", m.currentPath)
-	}
-
-	s := fmt.Sprintf("Current directory: %s\n\n", m.currentPath)
-
-	for i, entry := range m.entries {
-		prefix := "   "
-		if i == m.selectedIdx {
-			prefix = "-> "
-		}
-
-		name := entry.Name()
-
-		if entry.IsDir() {
-			name += "/"
-		}
-
-		s += fmt.Sprintf("%s%s\n", prefix, name)
-	}
-
-	return s
 }

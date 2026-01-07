@@ -11,6 +11,21 @@ import (
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
+	case tea.WindowSizeMsg:
+		m.viewportHeight = msg.Height - 3
+		if m.viewportHeight < 1 {
+			m.viewportHeight = 1
+		}
+
+		maxOffset := len(m.entries) - m.viewportHeight
+		if maxOffset < 0 {
+			maxOffset = 0
+		}
+
+		if m.scrollOffset > maxOffset {
+			m.scrollOffset = maxOffset
+		}
+
 	case tea.KeyMsg:
 		switch msg.String() {
 
@@ -20,11 +35,17 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "up":
 			if m.selectedIdx > 0 {
 				m.selectedIdx--
+				if m.selectedIdx < m.scrollOffset {
+					m.scrollOffset = m.selectedIdx
+				}
 			}
 
 		case "down":
 			if m.selectedIdx < len(m.entries)-1 {
 				m.selectedIdx++
+				if m.selectedIdx >= m.scrollOffset+m.viewportHeight {
+					m.scrollOffset++
+				}
 			}
 
 		case "right":
@@ -49,23 +70,34 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.currentPath = fullPath
 			m.entries = newEntries
 			m.selectedIdx = 0
+			m.scrollOffset = 0
 
 		case "left":
-			if len(m.history) == 0 {
-				return m, nil
+			var targetPath string
+
+			if len(m.history) > 0 {
+				targetPath = m.history[len(m.history)-1]
+				m.history = m.history[:len(m.history)-1]
+			} else {
+				parent := filepath.Dir(m.currentPath)
+
+				if parent == m.currentPath {
+					return m, nil
+				}
+
+				targetPath = parent
+
 			}
 
-			previousPath := m.history[len(m.history)-1]
-
-			newEntries, err := fs.ListEntries(previousPath)
+			newEntries, err := fs.ListEntries(targetPath)
 			if err != nil {
 				return m, nil
 			}
 
-			m.history = m.history[:len(m.history)-1]
-			m.currentPath = previousPath
+			m.currentPath = targetPath
 			m.entries = newEntries
 			m.selectedIdx = 0
+			m.scrollOffset = 0
 		}
 
 	}
