@@ -45,7 +45,7 @@ func (m *Model) View() string {
 
 	// Footer
 	b.WriteString("\n")
-	b.WriteString(footerStyle.Render("↑ ↓ navigate   Enter open   q quit"))
+	b.WriteString(footerStyle.Render("↑ ↓: navigate   ➜: open   ←: backtrack   q: quit   c: cancel cd after quit"))
 
 	return b.String()
 }
