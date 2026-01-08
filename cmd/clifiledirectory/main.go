@@ -15,7 +15,11 @@ func main() {
 	}
 
 	model := ui.NewModel(startPath)
-	program := tea.NewProgram(model)
+	program := tea.NewProgram(
+		model,
+		tea.WithInput(os.Stdin),
+		tea.WithOutput(os.Stderr),
+	)
 
 	finalModel, err := program.Run()
 	if err != nil {
