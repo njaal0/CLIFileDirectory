@@ -30,7 +30,7 @@ func NewModel(startPath string) *Model {
 		SelectedIdx:     0,
 		History:         []string{},
 		viewportHeight:  15,
-		ShouldPrintPath: true,
+		ShouldPrintPath: false,
 	}
 }
 

@@ -7,16 +7,13 @@ import (
 func (m *Model) View() string {
 	var b strings.Builder
 
-	// Header
-	b.WriteString(headerStyle.Render("📁 " + m.CurrentPath))
-	b.WriteString("\n\n")
+	b.WriteString("📁 " + m.CurrentPath + "\n\n")
 
-	if len(m.Entries) == 0 {
-		b.WriteString("(empty directory)\n")
-		return b.String()
+	start := 0
+	if m.SelectedIdx >= m.viewportHeight {
+		start = m.SelectedIdx - m.viewportHeight + 1
 	}
 
-	start := m.ScrollOffset
 	end := start + m.viewportHeight
 	if end > len(m.Entries) {
 		end = len(m.Entries)
@@ -24,28 +21,24 @@ func (m *Model) View() string {
 
 	for i := start; i < end; i++ {
 		entry := m.Entries[i]
-
 		name := entry.Name()
-		style := fileStyle
 
 		if entry.IsDir() {
 			name += "/"
-			style = dirStyle
 		}
 
-		var line string
 		if i == m.SelectedIdx {
-			line = selectedStyle.Render("➜ " + name)
+			b.WriteString("> " + name + "\n")
 		} else {
-			line = style.Render("  " + name)
+			b.WriteString("  " + name + "\n")
 		}
-
-		b.WriteString(line + "\n")
 	}
 
-	// Footer
-	b.WriteString("\n")
-	b.WriteString(footerStyle.Render("↑ ↓: navigate   ➜: open   ←: backtrack   q: quit   c: cancel cd after quit"))
+	for i := end - start; i < m.viewportHeight; i++ {
+		b.WriteString("\n")
+	}
+
+	b.WriteString("\n↑↓ navigate   → open   ← back   q quit")
 
 	return b.String()
 }
