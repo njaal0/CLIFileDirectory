@@ -38,7 +38,7 @@ func (m *Model) View() string {
 		b.WriteString("\n")
 	}
 
-	b.WriteString("\n↑↓ navigate   → open   ← back   q quit")
+	b.WriteString("\n↑↓: navigate   →: open   ←: back   c: cancel cd after quit   q: quit")
 
 	return b.String()
 }
