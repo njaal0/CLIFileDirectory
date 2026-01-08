@@ -33,6 +33,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.ShouldPrintPath = false
 
 		case "q":
+			m.ShouldPrintPath = true
 			return m, tea.Quit
 
 		case "up":
