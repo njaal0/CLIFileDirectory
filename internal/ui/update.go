@@ -1,9 +1,10 @@
 package ui
 
 import (
+	"path/filepath"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/njaal0/CLIFileDirectory/internal/fs"
-	"path/filepath"
 	//"os"
 	//"path/filepath"
 )
@@ -12,10 +13,11 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
 	case tea.WindowSizeMsg:
-		m.viewportHeight = msg.Height - 3
+		m.viewportHeight = msg.Height - 6
 		if m.viewportHeight < 1 {
 			m.viewportHeight = 1
 		}
+		m.viewportWidth = msg.Width
 
 		maxOffset := len(m.Entries) - m.viewportHeight
 		if maxOffset < 0 {

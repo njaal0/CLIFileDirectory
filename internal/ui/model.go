@@ -2,9 +2,10 @@ package ui
 
 import (
 	"fmt"
+	"os"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/njaal0/CLIFileDirectory/internal/fs"
-	"os"
 )
 
 type Model struct {
@@ -13,6 +14,7 @@ type Model struct {
 	SelectedIdx     int
 	History         []string
 	viewportHeight  int
+	viewportWidth   int
 	ScrollOffset    int
 	ShouldPrintPath bool
 }
@@ -30,6 +32,7 @@ func NewModel(startPath string) *Model {
 		SelectedIdx:     0,
 		History:         []string{},
 		viewportHeight:  15,
+		viewportWidth:   80,
 		ShouldPrintPath: false,
 	}
 }
