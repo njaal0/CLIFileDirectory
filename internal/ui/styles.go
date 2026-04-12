@@ -1,27 +1,36 @@
 package ui
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"os"
+
+	"github.com/charmbracelet/lipgloss"
+)
+
+// renderer is bound to stderr — the actual terminal output — so that lipgloss
+// correctly detects color support even when stdout is piped (e.g. via a shell
+// wrapper that captures the selected path).
+var renderer = lipgloss.NewRenderer(os.Stderr)
 
 var (
-	headerStyle = lipgloss.NewStyle().
+	headerStyle = renderer.NewStyle().
 			Bold(true).
 			Foreground(lipgloss.Color("63"))
 
-	selectedStyle = lipgloss.NewStyle().
+	selectedStyle = renderer.NewStyle().
 			Foreground(lipgloss.Color("230")).
 			Background(lipgloss.Color("62")).
 			Bold(true)
 
-	dirStyle = lipgloss.NewStyle().
+	dirStyle = renderer.NewStyle().
 			Foreground(lipgloss.Color("69")).
 			Bold(true)
 
-	fileStyle = lipgloss.NewStyle().
+	fileStyle = renderer.NewStyle().
 			Foreground(lipgloss.Color("252"))
 
-	footerStyle = lipgloss.NewStyle().
+	footerStyle = renderer.NewStyle().
 			Foreground(lipgloss.Color("241"))
 
-	separatorStyle = lipgloss.NewStyle().
+	separatorStyle = renderer.NewStyle().
 			Foreground(lipgloss.Color("237"))
 )
