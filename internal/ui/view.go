@@ -21,10 +21,7 @@ func (m *Model) View() string {
 	b.WriteString(headerStyle.Render("  📁 "+m.CurrentPath) + "\n")
 	b.WriteString(sep + "\n\n")
 
-	start := 0
-	if m.SelectedIdx >= m.viewportHeight {
-		start = m.SelectedIdx - m.viewportHeight + 1
-	}
+	start := m.ScrollOffset
 
 	end := start + m.viewportHeight
 	if end > len(m.Entries) {
