@@ -21,6 +21,9 @@ type Model struct {
 	NewFolderName   string
 	Renaming        bool
 	RenameTo        string
+	Searching       bool
+	SearchQuery     string
+	AllEntries      []os.DirEntry
 }
 
 func NewModel(startPath string) *Model {
@@ -33,6 +36,7 @@ func NewModel(startPath string) *Model {
 	return &Model{
 		CurrentPath:     startPath,
 		Entries:         entries,
+		AllEntries:      entries,
 		SelectedIdx:     0,
 		History:         []string{},
 		viewportHeight:  15,

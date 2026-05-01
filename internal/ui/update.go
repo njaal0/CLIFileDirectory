@@ -1,7 +1,9 @@
 package ui
 
 import (
+	"os"
 	"path/filepath"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/njaal0/CLIFileDirectory/internal/fs"
@@ -27,6 +29,71 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case tea.KeyMsg:
+		// While in search mode, intercept runes/backspace; pass navigation through.
+		if m.Searching {
+			switch msg.Type {
+			case tea.KeyEsc:
+				m.Searching = false
+				m.SearchQuery = ""
+				m.Entries = m.AllEntries
+				m.SelectedIdx = 0
+				m.ScrollOffset = 0
+
+			case tea.KeyBackspace, tea.KeyDelete:
+				if len(m.SearchQuery) > 0 {
+					m.SearchQuery = m.SearchQuery[:len(m.SearchQuery)-1]
+					m.Entries = filterEntries(m.AllEntries, m.SearchQuery)
+					m.SelectedIdx = 0
+					m.ScrollOffset = 0
+				}
+
+			case tea.KeyRunes:
+				m.SearchQuery += string(msg.Runes)
+				m.Entries = filterEntries(m.AllEntries, m.SearchQuery)
+				m.SelectedIdx = 0
+				m.ScrollOffset = 0
+
+			case tea.KeyUp:
+				if m.SelectedIdx > 0 {
+					m.SelectedIdx--
+					if m.SelectedIdx < m.ScrollOffset {
+						m.ScrollOffset = m.SelectedIdx
+					}
+				}
+
+			case tea.KeyDown:
+				if m.SelectedIdx < len(m.Entries)-1 {
+					m.SelectedIdx++
+					if m.SelectedIdx >= m.ScrollOffset+m.viewportHeight {
+						m.ScrollOffset++
+					}
+				}
+
+			case tea.KeyRight:
+				if len(m.Entries) == 0 {
+					break
+				}
+				entry := m.Entries[m.SelectedIdx]
+				if !entry.IsDir() {
+					break
+				}
+				fullPath := filepath.Join(m.CurrentPath, entry.Name())
+				newEntries, err := fs.ListEntries(fullPath)
+				if err != nil {
+					break
+				}
+				m.History = append(m.History, m.CurrentPath)
+				m.CurrentPath = fullPath
+				m.AllEntries = newEntries
+				m.Entries = newEntries
+				m.Searching = false
+				m.SearchQuery = ""
+				m.SelectedIdx = 0
+				m.ScrollOffset = 0
+			}
+			return m, nil
+		}
+
 		// While in rename mode, intercept all keys for the input.
 		if m.Renaming {
 			switch msg.Type {
@@ -101,6 +168,13 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.CreatingFolder = true
 			m.NewFolderName = ""
 
+		case "/":
+			m.Searching = true
+			m.SearchQuery = ""
+			m.Entries = m.AllEntries
+			m.SelectedIdx = 0
+			m.ScrollOffset = 0
+
 		case "r":
 			if len(m.Entries) > 0 {
 				m.Renaming = true
@@ -143,6 +217,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			m.History = append(m.History, m.CurrentPath)
 			m.CurrentPath = fullPath
+			m.AllEntries = newEntries
 			m.Entries = newEntries
 			m.SelectedIdx = 0
 			m.ScrollOffset = 0
@@ -170,6 +245,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 			m.CurrentPath = targetPath
+			m.AllEntries = newEntries
 			m.Entries = newEntries
 			m.SelectedIdx = 0
 			m.ScrollOffset = 0
@@ -178,4 +254,21 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	return m, nil
+}
+
+func filterEntries(entries []os.DirEntry, query string) []os.DirEntry {
+	if query == "" {
+		return entries
+	}
+	q := strings.ToLower(query)
+	var result []os.DirEntry
+	for _, e := range entries {
+		if strings.Contains(strings.ToLower(e.Name()), q) {
+			result = append(result, e)
+		}
+	}
+	if result == nil {
+		return []os.DirEntry{}
+	}
+	return result
 }
