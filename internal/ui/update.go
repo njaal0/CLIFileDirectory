@@ -5,8 +5,6 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/njaal0/CLIFileDirectory/internal/fs"
-	//"os"
-	//"path/filepath"
 )
 
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -29,6 +27,67 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case tea.KeyMsg:
+		// While in rename mode, intercept all keys for the input.
+		if m.Renaming {
+			switch msg.Type {
+			case tea.KeyEsc:
+				m.Renaming = false
+				m.RenameTo = ""
+
+			case tea.KeyEnter:
+				if m.RenameTo != "" && len(m.Entries) > 0 {
+					oldPath := filepath.Join(m.CurrentPath, m.Entries[m.SelectedIdx].Name())
+					newPath := filepath.Join(m.CurrentPath, m.RenameTo)
+					if err := fs.RenameEntry(oldPath, newPath); err == nil {
+						if entries, err := fs.ListEntries(m.CurrentPath); err == nil {
+							m.Entries = entries
+						}
+					}
+				}
+				m.Renaming = false
+				m.RenameTo = ""
+
+			case tea.KeyBackspace, tea.KeyDelete:
+				if len(m.RenameTo) > 0 {
+					m.RenameTo = m.RenameTo[:len(m.RenameTo)-1]
+				}
+
+			case tea.KeyRunes:
+				m.RenameTo += string(msg.Runes)
+			}
+			return m, nil
+		}
+
+		// While in folder-creation mode, intercept all keys for the input.
+		if m.CreatingFolder {
+			switch msg.Type {
+			case tea.KeyEsc:
+				m.CreatingFolder = false
+				m.NewFolderName = ""
+
+			case tea.KeyEnter:
+				if m.NewFolderName != "" {
+					newPath := filepath.Join(m.CurrentPath, m.NewFolderName)
+					if err := fs.CreateDir(newPath); err == nil {
+						if entries, err := fs.ListEntries(m.CurrentPath); err == nil {
+							m.Entries = entries
+						}
+					}
+				}
+				m.CreatingFolder = false
+				m.NewFolderName = ""
+
+			case tea.KeyBackspace, tea.KeyDelete:
+				if len(m.NewFolderName) > 0 {
+					m.NewFolderName = m.NewFolderName[:len(m.NewFolderName)-1]
+				}
+
+			case tea.KeyRunes:
+				m.NewFolderName += string(msg.Runes)
+			}
+			return m, nil
+		}
+
 		switch msg.String() {
 
 		case "c":
@@ -37,6 +96,16 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "q":
 			m.ShouldPrintPath = true
 			return m, tea.Quit
+
+		case "n":
+			m.CreatingFolder = true
+			m.NewFolderName = ""
+
+		case "r":
+			if len(m.Entries) > 0 {
+				m.Renaming = true
+				m.RenameTo = m.Entries[m.SelectedIdx].Name()
+			}
 
 		case "up":
 			if m.SelectedIdx > 0 {

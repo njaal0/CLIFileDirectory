@@ -33,4 +33,12 @@ var (
 
 	separatorStyle = renderer.NewStyle().
 			Foreground(lipgloss.Color("237"))
+
+	inputLabelStyle = renderer.NewStyle().
+			Foreground(lipgloss.Color("63")).
+			Bold(true)
+
+	inputStyle = renderer.NewStyle().
+			Foreground(lipgloss.Color("230")).
+			Background(lipgloss.Color("236"))
 )

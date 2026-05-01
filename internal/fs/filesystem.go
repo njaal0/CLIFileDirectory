@@ -15,3 +15,11 @@ func ListEntries(path string) (entries []os.DirEntry, err error) {
 
 	return entries, nil
 }
+
+func CreateDir(path string) error {
+	return os.Mkdir(path, 0755)
+}
+
+func RenameEntry(oldPath, newPath string) error {
+	return os.Rename(oldPath, newPath)
+}

@@ -52,7 +52,16 @@ func (m *Model) View() string {
 	}
 
 	b.WriteString("\n" + sep + "\n")
-	b.WriteString(footerStyle.Render("  ↑↓ navigate   → open   ← back   q quit"))
+
+	if m.CreatingFolder {
+		prompt := inputLabelStyle.Render("  New folder: ") + inputStyle.Render(m.NewFolderName+"█")
+		b.WriteString(prompt + "\n")
+	} else if m.Renaming {
+		prompt := inputLabelStyle.Render("  Rename to: ") + inputStyle.Render(m.RenameTo+"█")
+		b.WriteString(prompt + "\n")
+	} else {
+		b.WriteString(footerStyle.Render("  ↑↓ navigate   → open   ← back   n new folder   r rename   q quit"))
+	}
 
 	return b.String()
 }

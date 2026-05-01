@@ -17,6 +17,10 @@ type Model struct {
 	viewportWidth   int
 	ScrollOffset    int
 	ShouldPrintPath bool
+	CreatingFolder  bool
+	NewFolderName   string
+	Renaming        bool
+	RenameTo        string
 }
 
 func NewModel(startPath string) *Model {
